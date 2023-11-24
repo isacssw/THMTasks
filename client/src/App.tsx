@@ -10,7 +10,7 @@ function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
 
   useEffect(() => {
-    fetch(import.meta.env.VITE_API+'/tasks')
+    fetch(import.meta.env.VITE_API+'tasks')
       .then((res) => res.json())
       .then((data) => setTasks(data))
       .catch((err) => console.error("Error: ", err));
