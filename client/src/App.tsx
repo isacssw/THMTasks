@@ -7,6 +7,9 @@ import {
   updateTask,
 } from "./services/tasks.service";
 import Modal from "./components/Modal";
+import TaskItem from "./components/Task";
+
+
 
 function App() {
   const [tasks, setTasks] = useState<ITask[]>([]);
@@ -38,7 +41,6 @@ function App() {
   const handleDeleteTask = async (id: string) => {
     try {
       const data = await deleteTask(id);
-
       setTasks((tasks) => tasks.filter((task) => task._id !== data._id));
     } catch (error) {
       console.error(`Error deleting task: ${id} `, error);
@@ -51,10 +53,15 @@ function App() {
       await fetchTasks();
       setPopupToggle(false);
       setInputText("");
-
     } catch (error) {
-      console.error(`Error updating task: ${id} `, error);
+      console.error(`Error updating task: ${updateId} `, error);
     }
+  };
+
+  const handleEdit = (taskId: string) => {
+    setAction("Update");
+    setUpdateId(taskId);
+    setPopupToggle(true);
   };
 
   useEffect(() => {
@@ -79,32 +86,12 @@ function App() {
         <ul className="max-w-full space-y-1 text-gray-500 list-inside">
           {tasks.length > 0 ? (
             tasks.map((task) => (
-              <div
+              <TaskItem
                 key={task._id}
-                className="flex items-center border rounded-lg justify-between p-2"
-              >
-                <li>{task.title}</li>
-
-                <div className="flex gap-2">
-                  <div
-                    className="focus:outline-none text-white bg-slate-200 hover:bg-slate-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-1.5"
-                    onClick={() => {
-                      setAction("Update");
-                      setUpdateId(task._id);
-                      setPopupToggle(true);
-                    }}
-                  >
-                    ✏️
-                  </div>
-
-                  <div
-                    className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-1.5"
-                    onClick={() => handleDeleteTask(task._id)}
-                  >
-                    x
-                  </div>
-                </div>
-              </div>
+                task={task}
+                handleEdit={handleEdit}
+                handleDelete={handleDeleteTask}
+              />
             ))
           ) : (
             <p>Add some tasks</p>
@@ -116,7 +103,7 @@ function App() {
         <Modal
           inputText={inputText}
           setInputText={setInputText}
-          actionHandler={action == "Update" ? handleUpdateTask : addTask}
+          actionHandler={action === "Update" ? handleUpdateTask : addTask}
           setPopupToggle={setPopupToggle}
           action={action}
         />
