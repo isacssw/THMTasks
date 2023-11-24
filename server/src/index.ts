@@ -2,11 +2,16 @@ import { config } from "dotenv";
 config();
 
 import express, { Request, Response } from "express";
-import mongoose from "mongoose";
 import cors from "cors";
 
 import TaskModel from "./models/Task";
-import { createTaskHandler, deleteTaskHandler, getTaskHandler, updateTaskHandler } from "./controllers/task.controller";
+import {
+  createTaskHandler,
+  deleteTaskHandler,
+  getTaskHandler,
+  updateTaskHandler,
+} from "./controllers/task.controller";
+import { dbConnection } from "./utils/dbConnection";
 
 const PORT = 3333;
 
@@ -23,7 +28,8 @@ app.put("/task/update/:id", updateTaskHandler);
 
 app.delete("/task/delete/:id", deleteTaskHandler);
 
-mongoose.connect(process.env.MONGODB_URL!).then(() => {
+app.listen(PORT, async () => {
   console.log(`Listening on port ${PORT}`);
-  app.listen(PORT);
+
+  await dbConnection();
 });
