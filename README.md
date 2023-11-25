@@ -21,7 +21,7 @@ API Documentation (swagger) available at http://localhost:<PORT>/docs if you are
 
 ### BACKEND E2E TESTS
 
-- run command `npm run test` to start server
+- run command `npm run test` to run the E2E tests
 
 
 -----------
@@ -38,3 +38,7 @@ API Documentation (swagger) available at http://localhost:<PORT>/docs if you are
 
 - run command `npm install` to start server
 - run command `npm run dev` to start server
+
+### FRONTEND UNIT TESTS
+
+- run command `npm run test` to run the unit tests

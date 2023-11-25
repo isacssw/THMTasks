@@ -2,11 +2,12 @@ interface IModal {
   inputText: string;
   setInputText: (input: string) => void;
   setPopupToggle: (popupToggle: boolean) => void;
-  actionHandler: () => Promise<void>
-  action: string
+  actionHandler: () => Promise<void>;
+  action: string;
 }
 const Modal = (props: IModal) => {
-  const { inputText, action, setInputText, setPopupToggle, actionHandler } = props;
+  const { inputText, action, setInputText, setPopupToggle, actionHandler } =
+    props;
   return (
     <div
       tabIndex={-1}
@@ -33,6 +34,7 @@ const Modal = (props: IModal) => {
                   Type Title
                 </label>
                 <input
+                  id="modal-input"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                   placeholder="write a task title ..."
                   onChange={(e) => setInputText(e.target.value)}
