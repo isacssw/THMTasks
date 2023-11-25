@@ -6,7 +6,7 @@ import cors from "cors";
 import { dbConnection } from "./utils/dbConnection";
 import routes from "./routes";
 
-const PORT = 3333;
+const PORT = process.env.PORT;
 
 const app = express();
 
