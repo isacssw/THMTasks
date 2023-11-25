@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useReducer } from "react";
 import {
-  ITask,
   createTask,
   deleteTask,
   getTasks,
@@ -8,20 +7,23 @@ import {
 } from "./services/tasks.service";
 import Modal from "./components/Modal";
 import TaskItem from "./components/Task";
+import { IAppState, actionTypes, reducer } from "./utils/stateReducer";
 
+const initialState: IAppState = {
+  tasks: [],
+  popupToggle: false,
+  inputText: "",
+  action: "",
+  updateId: "",
+};
 
+const App = () => {
+  const [state, dispatch] = useReducer(reducer, initialState);
 
-function App() {
-  const [tasks, setTasks] = useState<ITask[]>([]);
-  const [popupToggle, setPopupToggle] = useState<boolean>(false);
-  const [inputText, setInputText] = useState<string>("");
-  const [action, setAction] = useState<string>("");
-  const [updateId, setUpdateId] = useState<string>("");
-
-  const fetchTasks = async () => {
+  const fetchTasks = async (): Promise<void> => {
     try {
       const newTasks = await getTasks();
-      setTasks(newTasks);
+      dispatch({ type: actionTypes.SET_TASKS, payload: newTasks });
     } catch (error) {
       console.error("Error fetching Tasks:", error);
     }
@@ -29,19 +31,25 @@ function App() {
 
   const addTask = async (): Promise<void> => {
     try {
-      const createdTask = await createTask(inputText);
-      setTasks([...tasks, createdTask]);
-      setPopupToggle(false);
-      setInputText("");
+      const createdTask = await createTask(state.inputText);
+      dispatch({
+        type: actionTypes.SET_TASKS,
+        payload: [...state.tasks, createdTask],
+      });
+      dispatch({ type: actionTypes.SET_POPUP_TOGGLE, payload: false });
+      dispatch({ type: actionTypes.SET_INPUT_TEXT, payload: "" });
     } catch (error) {
       console.error("Error creating new task:", error);
     }
   };
 
-  const handleDeleteTask = async (id: string) => {
+  const handleDeleteTask = async (id: string): Promise<void> => {
     try {
       const data = await deleteTask(id);
-      setTasks((tasks) => tasks.filter((task) => task._id !== data._id));
+      dispatch({
+        type: actionTypes.SET_TASKS,
+        payload: state.tasks.filter((task) => task._id !== data._id),
+      });
     } catch (error) {
       console.error(`Error deleting task: ${id} `, error);
     }
@@ -49,19 +57,19 @@ function App() {
 
   const handleUpdateTask = async (): Promise<void> => {
     try {
-      await updateTask(updateId, inputText);
+      await updateTask(state.updateId, state.inputText);
       await fetchTasks();
-      setPopupToggle(false);
-      setInputText("");
+      dispatch({ type: actionTypes.SET_POPUP_TOGGLE, payload: false });
+      dispatch({ type: actionTypes.SET_INPUT_TEXT, payload: "" });
     } catch (error) {
-      console.error(`Error updating task: ${updateId} `, error);
+      console.error(`Error updating task: ${state.updateId} `, error);
     }
   };
 
-  const handleEdit = (taskId: string) => {
-    setAction("Update");
-    setUpdateId(taskId);
-    setPopupToggle(true);
+  const handleEdit = (taskId: string): void => {
+    dispatch({ type: actionTypes.SET_ACTION, payload: "Update" });
+    dispatch({ type: actionTypes.SET_UPDATE_ID, payload: taskId });
+    dispatch({ type: actionTypes.SET_POPUP_TOGGLE, payload: true });
   };
 
   useEffect(() => {
@@ -76,21 +84,21 @@ function App() {
           <div
             className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5"
             onClick={() => {
-              setAction("Create");
-              setPopupToggle(true);
+              dispatch({ type: actionTypes.SET_ACTION, payload: "Create" });
+              dispatch({ type: actionTypes.SET_POPUP_TOGGLE, payload: true });
             }}
           >
             +
           </div>
         </div>
         <ul className="max-w-full space-y-1 text-gray-500 list-inside">
-          {tasks.length > 0 ? (
-            tasks.map((task) => (
+          {state.tasks.length > 0 ? (
+            state.tasks.map((task) => (
               <TaskItem
                 key={task._id}
                 task={task}
-                handleEdit={handleEdit}
-                handleDelete={handleDeleteTask}
+                handleEdit={() => handleEdit(task._id)}
+                handleDelete={() => handleDeleteTask(task._id)}
               />
             ))
           ) : (
@@ -99,13 +107,17 @@ function App() {
         </ul>
       </div>
 
-      {popupToggle && (
+      {state.popupToggle && (
         <Modal
-          inputText={inputText}
-          setInputText={setInputText}
-          actionHandler={action === "Update" ? handleUpdateTask : addTask}
-          setPopupToggle={setPopupToggle}
-          action={action}
+          inputText={state.inputText}
+          setInputText={(text: string) =>
+            dispatch({ type: actionTypes.SET_INPUT_TEXT, payload: text })
+          }
+          actionHandler={state.action === "Update" ? handleUpdateTask : addTask}
+          setPopupToggle={(toggle: boolean) =>
+            dispatch({ type: actionTypes.SET_POPUP_TOGGLE, payload: toggle })
+          }
+          action={state.action}
         />
       )}
     </div>
