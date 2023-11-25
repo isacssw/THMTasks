@@ -11,6 +11,7 @@ steps to run application locally
 ## ENV SERVER SAMPLE 
 
 `MONGODB_URL=http://localhost:5555`
+
 `PORT=3333`
 
 - run command `npm install` to start server

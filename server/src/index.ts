@@ -5,6 +5,7 @@ import express from "express";
 import cors from "cors";
 import { dbConnection } from "./utils/dbConnection";
 import routes from "./routes";
+import swaggerDocs from "./utils/swagger";
 
 const PORT = process.env.PORT;
 
@@ -20,4 +21,6 @@ app.listen(PORT, async () => {
   await dbConnection();
 
   routes(app);
+
+  swaggerDocs(app, parseInt(process.env.PORT!, 10),)
 });
