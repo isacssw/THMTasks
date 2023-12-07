@@ -6,6 +6,7 @@ import cors from "cors";
 import { dbConnection } from "./utils/dbConnection";
 import routes from "./routes";
 import swaggerDocs from "./utils/swagger";
+import errorHandler from "./middleware/errorHandler";
 
 const PORT = process.env.PORT;
 
@@ -22,5 +23,7 @@ app.listen(PORT, async () => {
 
   routes(app);
 
-  swaggerDocs(app, parseInt(process.env.PORT!, 10),)
+  app.use(errorHandler);
+
+  swaggerDocs(app, parseInt(process.env.PORT!, 10));
 });

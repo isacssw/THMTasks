@@ -2,7 +2,7 @@ import supertest from "supertest";
 import express, { Express } from "express";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
-import routes from "../../routes";
+import routes from "../routes";
 
 const app = express();
 app.use(express.json());
@@ -56,13 +56,15 @@ describe("Task API", () => {
 
   test("Delete Task", async () => {
     const response = await request.delete(`/task/delete/${taskId}`);
-    
+
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty("_id", taskId);
   });
 
   test("Delete Non existent valid Task", async () => {
-    const response = await request.delete(`/task/delete/656174712480df0402dee33c`);
+    const response = await request.delete(
+      `/task/delete/656174712480df0402dee33c`
+    );
     expect(response.status).toBe(404);
   });
 });
