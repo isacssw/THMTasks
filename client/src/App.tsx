@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from "react";
+import { useEffect, useReducer } from "react";
 import {
   createTask,
   deleteTask,
@@ -66,9 +66,10 @@ const App = () => {
     }
   };
 
-  const handleEdit = (taskId: string): void => {
+  const handleEdit = (taskId: string, title: string): void => {
     dispatch({ type: actionTypes.SET_ACTION, payload: "Update" });
     dispatch({ type: actionTypes.SET_UPDATE_ID, payload: taskId });
+    dispatch({ type: actionTypes.SET_INPUT_TEXT, payload: title });
     dispatch({ type: actionTypes.SET_POPUP_TOGGLE, payload: true });
   };
 
@@ -97,7 +98,7 @@ const App = () => {
               <TaskItem
                 key={task._id}
                 task={task}
-                handleEdit={() => handleEdit(task._id)}
+                handleEdit={() => handleEdit(task._id, task.title)}
                 handleDelete={() => handleDeleteTask(task._id)}
               />
             ))
@@ -122,6 +123,6 @@ const App = () => {
       )}
     </div>
   );
-}
+};
 
 export default App;
